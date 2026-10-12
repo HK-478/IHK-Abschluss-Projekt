@@ -2,6 +2,7 @@
 
 namespace App\Services;
 use App\Contracts\IdentityProviderInterface;
+use App\Models\User;
 use Illuminate\Support\Facades\Process;
 
 // In Laravel 10/11 super einfach!
@@ -38,16 +39,19 @@ class IdentityProviderAdapter implements IdentityProviderInterface
     // ... authenticate(), refreshToken(), findUser() ...
     public function authenticate(string $credentials)
     {
-        // TODO: Implement authenticate() method.
+        // Für zukünftige Erweiterungen vorgesehen (Out of Scope für dieses Projekt)
+        throw new \BadMethodCallException('Method authenticate() is not implemented yet.');
     }
 
     public function refreshToken()
     {
-        // TODO: Implement refreshToken() method.
+        // Für zukünftige Erweiterungen vorgesehen (Out of Scope für dieses Projekt)
+        throw new \BadMethodCallException('Method refreshToken() is not implemented yet.');
     }
 
     public function findUser(string $identifier)
     {
-        // TODO: Implement findUser() method.
+        // Für zukünftige Erweiterungen vorgesehen (Out of Scope für dieses Projekt)
+        throw new \BadMethodCallException('Method findUser() is not implemented yet.');
     }
 }

@@ -3,11 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Models\Alarm;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AlarmController extends Controller
 {
+    // Diese Methode lädt die Seite und übergibt die Daten
+    public function index()
+    {
+        $user = Auth::user();
+
+        // Das query() sagt deinem Editor explizit: "Hier startet eine Datenbank-Abfrage!"
+        $teamMembers = User::query()
+            ->where('id', '!=', $user->id)
+            ->with(['onlineStatus' => function($query) {
+                $query->latest('last_seen_at')->limit(1);
+            }])
+            ->get();
+
+        /*
+         * Falls du dich SELBST auch zwingend in der Liste sehen möchtest,
+         * lösche das "where" und nutze stattdessen das hier:
+         *
+         * $teamMembers = User::with(['onlineStatus' => function($query) {
+         *     $query->latest('last_seen_at')->limit(1);
+         * }])->get();
+         */
+
+        // Wir lassen den Variablen-Namen $teamMembers, damit deine alarm.blade.php
+        // nicht kaputt geht, auch wenn es jetzt eher "allUsers" sind.
+        return view('alarm', compact('teamMembers'));
+    }
+
     // Entspricht +createAlarm(watchedUser: Benutzer) aus dem UML
     public function store(Request $request)
     {

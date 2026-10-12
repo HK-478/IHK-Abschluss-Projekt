@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\OnlineStatus;
 
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
@@ -16,6 +17,15 @@ class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    protected $fillable = [
+        'team_id',
+        'username',
+        'email',
+        'password_hash',
+        'role',
+        'joined_at'
+    ];
 
     /**
      * Get the attributes that should be cast.
@@ -29,6 +39,19 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Sagt Laravel den exakten Tabellen-Spaltennamen für das Passwort
+    public function getAuthPasswordName(): string
+    {
+        return 'password_hash';
+    }
+
+    // Sagt Laravel, dass unser Passwortfeld "password_hash" heißt
+    public function getAuthPassword()
+    {
+        return $this->password_hash;
+    }
+
 
     // Ein User gehört zu einem Team
     public function team()
