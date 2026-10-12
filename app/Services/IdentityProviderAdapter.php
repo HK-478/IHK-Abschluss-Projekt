@@ -10,14 +10,31 @@ class IdentityProviderAdapter implements IdentityProviderInterface
 {
     public function syncUser(): void
     {
-        // So rufst du dein Python-Skript für Opendesk/LDAP aus PHP heraus auf
-        $result = Process::run('python3 /pfad/zu/deinem/script/sync_ldap.py');
+        // Führt das Python-Skript im Ordner base_path aus
+        $result = Process::run(['python3', base_path('scripts/sync_keycloak.py')]);
 
         if ($result->successful()) {
-            $daten = json_decode($result->output(), true);
-            // Hier die User in der DB aktualisieren...
+            // Angenommen, das Skript gibt JSON zurück
+            $usersData = json_decode($result->output(), true);
+
+            foreach ($usersData as $data) {
+                User::updateOrCreate(
+                    ['email' => $data['email']], // E-Mail ist laut ERM ein Alternativschlüssel (AK)
+                    [
+                        'username' => $data['username'],
+                        'team_id' => $data['team_id'],
+                        'role' => $data['role'],
+                        'password_hash' => $data['password_hash'], // Nur synchronisieren, wenn Keycloak das erfordert
+                        'joined_at' => now(),
+                    ]
+                );
+            }
+        } else {
+            // Fehlerbehandlung, falls das Skript fehlschlägt
+            \Log::error('Python LDAP Sync fehlgeschlagen: ' . $result->errorOutput());
         }
     }
+
     // ... authenticate(), refreshToken(), findUser() ...
     public function authenticate(string $credentials)
     {

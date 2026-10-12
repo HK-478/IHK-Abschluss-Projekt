@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(\App\Contracts\StatusServiceInterface::class, \App\Services\StatusService::class);
         $this->app->bind(\App\Contracts\IdentityProviderInterface::class, \App\Services\IdentityProviderAdapter::class);
-        // ... andere Interfaces
+        $this->app->bind(\App\Contracts\NotificationServiceInterface::class, \App\Services\NotificationService::class);
     }
 
     /**
