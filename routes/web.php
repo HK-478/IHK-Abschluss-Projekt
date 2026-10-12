@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AlarmController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
@@ -11,8 +12,13 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
-});
+    // Holt alle User inkl. Online-Status und Team (falls vorhanden)
+    $users = User::with(['onlineStatus' => function($query) {
+        $query->latest('last_seen_at')->limit(1);
+    }, 'team'])->get();
+
+    return view('dashboard', compact('users'));
+})->name('dashboard')->middleware('auth');
 
 Route::get('/alarm', [AlarmController::class, 'index'])->name('alarms.index');
 Route::post('/alarms', [AlarmController::class, 'store'])->name('alarms.store');

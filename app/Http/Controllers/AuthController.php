@@ -56,8 +56,25 @@ class AuthController extends Controller
     public function logout(Request $request, AuthServiceInterface $authService)
     {
         if (Auth::check()) {
-            $authService->logout(Auth::user()->username);
+            $user = Auth::user();
+
+            // 1. NEU: Status sofort auf "offline" setzen
+            // Wir schreiben einen Zeitstempel, der 10 Minuten in der Vergangenheit liegt.
+            // Dadurch schlägt deine 5-Minuten-Regel aus der View sofort an!
+            OnlineStatus::create([
+                'user_id' => $user->id,
+                'last_seen_at' => now()->subMinutes(10),
+                'status' => 'offline',
+            ]);
+
+            // 2. Dein bestehender Code
+            $authService->logout($user->username);
         }
+
+        // 3. NEU: Laravel Sicherheits-Logout (zerstört die Session endgültig)
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect('/welcome');
     }

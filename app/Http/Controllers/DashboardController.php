@@ -11,14 +11,14 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        // Holt alle Mitglieder aus dem gleichen Team inkl. aktuellem Status[cite: 1]
-        $teamMembers = $user->team->users()
-            ->where('id', '!=', $user->id) // Sich selbst ausblenden
+        // Holt ALLE Benutzer aus dem System (außer dir selbst), egal welches Team
+        $teamMembers = \App\Models\User::query()
+            ->where('id', '!=', $user->id)
             ->with(['onlineStatus' => function($query) {
-                $query->latest('last_seen_at')->limit(1); // Nur den neuesten Status holen
-            }])
+                $query->latest('last_seen_at')->limit(1);
+            }, 'team']) // Wichtig: Team für die Anzeige auf der Karte mitladen
             ->get();
 
-        return view('dashboard', compact('teamMembers')); // View aus resources/views/dashboard.blade.php
+        return view('dashboard', compact('teamMembers'));
     }
 }
