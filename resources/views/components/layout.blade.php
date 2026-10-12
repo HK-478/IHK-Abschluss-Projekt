@@ -21,22 +21,24 @@
         <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css"/>
 
     </head>
+    @guest
     <body>
         <header>
-            @auth
+
                 <x-nav/>
-            @endauth
+
         </header>
 
         <main>
             <div>
-                @auth
+
                     <x-sidebar/>
-                @endauth
+
             </div>
             <div>
                 {{ $slot }}
             </div>
         </main>
     </body>
+    @endguest
 </html>

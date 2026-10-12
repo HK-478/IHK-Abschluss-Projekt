@@ -11,7 +11,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(\App\Contracts\StatusServiceInterface::class, \App\Services\StatusService::class);
+        $this->app->bind(\App\Contracts\IdentityProviderInterface::class, \App\Services\IdentityProviderAdapter::class);
+        // ... andere Interfaces
     }
 
     /**
@@ -21,4 +23,5 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
+
 }

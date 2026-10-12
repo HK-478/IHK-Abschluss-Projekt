@@ -1,5 +1,5 @@
 <x-layout title="Home">
-    <form>
+    <form style="margin: auto">
         <fieldset id="login" class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
             <legend class="fieldset-legend">Login</legend>
 

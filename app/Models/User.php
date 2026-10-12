@@ -29,4 +29,28 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Ein User gehört zu einem Team
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
+    }
+
+    // Alarme, die dieser User erstellt hat
+    public function createdAlarms()
+    {
+        return $this->hasMany(Alarm::class, 'user_id');
+    }
+
+    // Alarme, bei denen dieser User beobachtet wird
+    public function targetAlarms()
+    {
+        return $this->hasMany(Alarm::class, 'watched_user_id');
+    }
+
+    // Status-Verlauf
+    public function onlineStatus()
+    {
+        return $this->hasMany(OnlineStatus::class);
+    }
 }
