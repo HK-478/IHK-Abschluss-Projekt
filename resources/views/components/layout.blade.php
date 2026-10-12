@@ -19,6 +19,17 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css"/>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css"/>
+
+    <style>
+        body {
+            background-image: url("/images/background.jpg") !important;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            min-height: 100vh;
+        }
+    </style>
 </head>
 <body class="bg-base-100 text-base-content">
 
