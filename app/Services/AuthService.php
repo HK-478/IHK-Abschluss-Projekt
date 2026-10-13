@@ -4,46 +4,50 @@ namespace App\Services;
 
 use App\Contracts\AuthServiceInterface;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class AuthService implements AuthServiceInterface
 {
 
-    // Entspricht +login(username, password)[cite: 1]
     public function login(string $username, string $password): bool
     {
-        // Laravels Auth::attempt prüft das Passwort automatisch gegen den Hash in der DB
-        return Auth::attempt(['username' => $username, 'password' => $password]);
+        // 1. User anhand des Usernamens suchen
+        $user = User::where('username', $username)->first();
+
+        // 2. Prüfen, ob der User existiert UND das Passwort (Bcrypt) stimmt
+        if ($user && $this->verifyPasswordHash($password, $user->password_hash)) {
+
+            // 3. User manuell in Laravel einloggen
+            Auth::login($user);
+            return true;
+        }
+
+        return false;
     }
 
-    // Entspricht +logout(username)[cite: 1]
+    public function verifyPasswordHash(string $password, string $hash): bool
+    {
+        // 1. Präfixe wie {crypt} oder {bcrypt} entfernen (falls vorhanden)
+        if (str_starts_with($hash, '{crypt}')) {
+            $hash = substr($hash, 7);
+        } elseif (str_starts_with(strtolower($hash), '{bcrypt}')) {
+            $hash = substr($hash, 8);
+        }
+
+        // 2. DER TRICK: Wir übersetzen das Python Bcrypt ($2b$) in PHP Bcrypt ($2y$)
+        if (str_starts_with($hash, '$2b$')) {
+            $hash = '$2y$' . substr($hash, 4);
+        }
+
+        // 3. Das Passwort direkt im Klartext übergeben! PHP kümmert sich um den Rest.
+        return password_verify($password, $hash);
+    }
+
     public function logout(string $username): void
     {
-        // Wir loggen den aktuellen User aus (den Parameter username können wir fürs Logging nutzen)
         \Log::info("User {$username} hat sich ausgeloggt.");
         Auth::logout();
         session()->invalidate();
         session()->regenerateToken();
-    }
-
-    // Entspricht +verifyPasswordHash()[cite: 1]
-    public function verifyPasswordHash(string $password, string $hash): bool
-    {
-        // 1. Univention Standard: {crypt} SHA-512
-        if (str_starts_with($hash, '{crypt}')) {
-            $realHash = substr($hash, 7); // Schneidet '{crypt}' ab
-            return password_verify($password, $realHash);
-        }
-
-        // 2. Direktes Format: {SHA512}
-        if (str_starts_with($hash, '{SHA512}')) {
-            $realHash = substr($hash, 8); // Schneidet '{SHA512}' ab
-            $generatedHash = base64_encode(hash('sha512', $password, true));
-            return hash_equals($realHash, $generatedHash);
-        }
-
-        // 3. Dein ursprünglicher Code als Fallback (für Bcrypt etc.)
-        return Hash::check($password, $hash);
     }
 }

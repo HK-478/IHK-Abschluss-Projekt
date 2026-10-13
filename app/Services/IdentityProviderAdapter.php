@@ -16,7 +16,7 @@ class IdentityProviderAdapter implements IdentityProviderInterface
     public function syncUser(): void
     {
         // Führt das Python-Skript im Ordner base_path aus
-        $result = Process::run(['python3', base_path('scripts/sync_keycloak.py')]);
+        $result = Process::run(['python3', base_path('scripts/sync_keycloak_cluster.py')]);
 
         if ($result->successful()) {
             // Dekodiert den reinen JSON-String (Fehlermeldungen aus sys.stderr ignoriert Process automatisch im output!)

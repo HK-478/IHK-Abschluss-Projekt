@@ -25,11 +25,6 @@ Route::post('/alarms', [AlarmController::class, 'store'])->name('alarms.store');
 Route::delete('/alarms/{id}', [AlarmController::class, 'destroy'])->name('alarms.destroy');
 
 
-// Wenn jemand nur auf '/' geht, leiten wir ihn ab jetzt zum Dashboard
-Route::get('/', function () {
-    return redirect('/dashboard');
-});
-
 // Routen für Besucher (NICHT eingeloggt)
 Route::middleware(['guest'])->group(function () {
     Route::get('/welcome', [AuthController::class, 'showLogin'])->name('login');

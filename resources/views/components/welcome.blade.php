@@ -19,18 +19,8 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css"/>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css"/>
 
-    <style>
-        body {
-            background-image: url("/images/background.jpg") !important;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            margin: 0;
-            min-height: 100vh;
-        }
-    </style>
 </head>
-<body class="bg-base-100 text-base-content">
+<body class="bg-[url('/images/background.jpg')] bg-cover bg-center bg-no-repeat bg-fixed min-h-screen antialiased bg-base-100 text-base-content">
 
 @auth
     <!-- DaisyUI Drawer Container -->

@@ -1,5 +1,5 @@
 <x-welcome title="Login">
-    <div class="flex min-h-screen items-center justify-center bg-gray-100">
+    <div class="bg-[url('/images/background.jpg')] bg-cover bg-center bg-no-repeat bg-fixed min-h-screen antialiased flex items-center justify-center bg-gray-100">
         <!-- action zeigt auf unsere Route, method MUSS POST sein -->
         <form action="{{ route('login.post') }}" method="POST">
             <!-- @csrf ist in Laravel Pflicht bei jedem POST-Formular! -->

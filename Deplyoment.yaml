@@ -1,0 +1,84 @@
+---
+# 1. Das Secret (Hier kommt deine .env rein!)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: opendesk-status-secret
+  namespace: opendesk
+type: Opaque
+stringData:
+  APP_ENV: "production"
+  APP_DEBUG: "false"
+  APP_KEY: "base64:DeinLaravelAppKeyAusDerLokalenEnv..." # WICHTIG!
+  DB_CONNECTION: "sqlite"
+
+  # Deine Python-Variablen:
+  NAMESPACE: "opendesk"
+  KEYCLOAK_CLIENT_ID: "mein-admin-client"
+  KEYCLOAK_CLIENT_SECRET: "mldPJc2kaenOQuhNxfmfVZilHCGhm1WM"
+  LDAP_SEARCH_BASE: "dc=swp-ldap,dc=internal"
+  LDAP_USER: "cn=admin,dc=swp-ldap,dc=internal"
+  LDAP_PASSWORD: "f425a7fa62f25556dffc16f77a2a95868957f0a1"
+
+---
+# 2. Das Deployment (Dein Container)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opendesk-status-app
+  namespace: opendesk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opendesk-status
+  template:
+    metadata:
+      labels:
+        app: opendesk-status
+    spec:
+      # WICHTIG: Erlaubt dem Pod, die K8s API anzufragen (für dein Python Skript)
+      serviceAccountName: default
+      containers:
+        - name: app
+          image: opendesk-status:v3
+          ports:
+            - containerPort: 80
+          envFrom:
+            - secretRef:
+                name: opendesk-status-secret # Lädt alle Werte von oben als .env!
+
+---
+# 3. Der Service (Internes Netzwerk)
+apiVersion: v1
+kind: Service
+metadata:
+  name: opendesk-status-svc
+  namespace: opendesk
+spec:
+  selector:
+    app: opendesk-status
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+# 4. Der Ingress (Die Subdomain!)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: opendesk-status-ingress
+  namespace: opendesk
+spec:
+  rules:
+    - host: einstieg.conix.at # <-- HIER IST DEINE SUBDOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: opendesk-status-svc
+                port:
+                  number: 80

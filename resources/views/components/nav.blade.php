@@ -18,7 +18,7 @@
         </label>
     </div>
 
-    <div class="mx-2 flex-1 px-2 font-bold text-lg">Opendesk Status</div>
+    <div class="mx-2 flex-1 px-2 font-bold text-lg">Opendesk</div>
 
     <!-- Die Navbar Items -->
     <div class="hidden flex-none lg:block">
